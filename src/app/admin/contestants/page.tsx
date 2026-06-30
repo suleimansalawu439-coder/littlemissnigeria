@@ -11,7 +11,7 @@ export default async function AdminContestantsPage() {
     },
   });
 
-  const serialized = contestants.map((c: any) => ({
+  const serialized = contestants.map((c) => ({
     id: c.id,
     name: c.name,
     bio: c.bio,
