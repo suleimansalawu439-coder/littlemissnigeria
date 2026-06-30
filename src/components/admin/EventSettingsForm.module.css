@@ -1,0 +1,190 @@
+.page {
+  animation: fadeIn 0.3s ease;
+}
+
+.pageHeader {
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.25rem;
+}
+
+.pageSubtitle {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ─── Quick Stats ──────────── */
+
+.quickStats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.quickStat {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.5rem;
+  background: rgba(18,18,26,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.quickStatIcon {
+  color: #D4AF37;
+}
+
+.quickStatValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.quickStatLabel {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ─── Messages ──────────── */
+
+.successMsg {
+  padding: 0.75rem 1rem;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #22c55e;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.errorMsg {
+  padding: 0.75rem 1rem;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+/* ─── Form Card ──────────── */
+
+.formCard {
+  background: rgba(18,18,26,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+}
+
+.input,
+.textarea {
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212,175,55,0.15);
+}
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.dateRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #D4AF37, #F5D061);
+  border: none;
+  border-radius: 8px;
+  color: #0a0a0f;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+.submitBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── Empty State ──────────── */
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255,255,255,0.4);
+}
+.emptyState h2 {
+  color: #fff;
+  margin: 1rem 0 0.5rem;
+}
+.emptyState p {
+  font-size: 0.95rem;
+}
+
+/* ─── Animations ──────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─── Responsive ──────────── */
+
+@media (max-width: 768px) {
+  .dateRow {
+    flex-direction: column;
+  }
+  .formCard {
+    padding: 1.5rem;
+  }
+}

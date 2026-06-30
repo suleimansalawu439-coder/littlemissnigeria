@@ -1,0 +1,207 @@
+.page {
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pageHeaderLeft h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.025em;
+}
+
+.pageHeaderLeft p {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, #D4AF37 0%, #F5D061 100%);
+  color: #0a0a0f;
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.addBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+}
+
+/* ─── Table ────────────────────────────────────── */
+.tableSection {
+  background: rgba(18, 18, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  padding: 0.85rem 1.5rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ─── Contestant Cell ──────────────────────────── */
+.contestantCell {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.contestantImage {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.contestantPlaceholder {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #D4AF37;
+  flex-shrink: 0;
+}
+
+.contestantName {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.contestantBio {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 0.15rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Votes Badge ──────────────────────────────── */
+.votesBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 100px;
+  color: #F5D061;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* ─── Actions ──────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.editBtn {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+}
+
+.editBtn:hover {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.deleteBtn {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.deleteBtn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.9rem;
+}
+
+/* ─── Responsive ───────────────────────────────── */
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

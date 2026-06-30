@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Event {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  contestants Contestant[]
+}
+
+model Contestant {
+  id          String   @id @default(uuid())
+  name        String
+  bio         String?
+  imageUrl    String?
+  totalVotes  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id])
+  payments    Payment[]
+}
+
+model Payment {
+  id           String        @id @default(uuid())
+  reference    String        @unique
+  amount       Float
+  status       PaymentStatus @default(PENDING)
+  votesAdded   Int
+  voterName    String
+  email        String
+  phoneNumber  String?
+  ipAddress    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  contestantId String
+  contestant   Contestant    @relation(fields: [contestantId], references: [id])
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

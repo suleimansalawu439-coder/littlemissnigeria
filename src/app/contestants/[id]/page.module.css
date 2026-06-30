@@ -1,0 +1,229 @@
+/* Contestant Detail Page Styles */
+
+.page {
+  padding: var(--space-2xl) 0 var(--space-4xl);
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+  margin-bottom: var(--space-xl);
+}
+
+.backLink:hover {
+  color: var(--accent);
+}
+
+.backArrow {
+  font-size: var(--font-size-lg);
+  transition: transform var(--transition-fast);
+}
+
+.backLink:hover .backArrow {
+  transform: translateX(-4px);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: start;
+}
+
+/* Image Column */
+.imageColumn {
+  position: relative;
+  animation: fadeInUp 0.6s ease both;
+}
+
+.imageWrapper {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  aspect-ratio: 3 / 4;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+/* Info Column */
+.infoColumn {
+  animation: fadeInUp 0.6s ease both;
+  animation-delay: 0.15s;
+}
+
+.contestantName {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+}
+
+.stats {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.statCard {
+  flex: 1;
+  padding: var(--space-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.statValue {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+}
+
+.statLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+.bioSection {
+  margin-bottom: var(--space-xl);
+}
+
+.bioTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  margin-bottom: var(--space-md);
+}
+
+.bioText {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: var(--space-xl) 0;
+}
+
+.votingSection {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Not Found */
+.notFound {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-md);
+}
+
+.notFoundIcon {
+  font-size: 64px;
+  opacity: 0.5;
+}
+
+.notFoundTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.notFoundText {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+}
+
+.notFoundLink {
+  margin-top: var(--space-md);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .layout {
+    gap: var(--space-2xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .imageWrapper {
+    max-height: 500px;
+    aspect-ratio: auto;
+  }
+
+  .contestantName {
+    font-size: var(--font-size-3xl);
+  }
+
+  .stats {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    flex-direction: column;
+  }
+
+  .contestantName {
+    font-size: var(--font-size-2xl);
+  }
+
+  .votingSection {
+    padding: var(--space-lg);
+  }
+}
