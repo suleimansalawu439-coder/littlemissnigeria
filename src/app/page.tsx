@@ -3,7 +3,7 @@ import ContestantCard from '@/components/ContestantCard';
 import CountdownTimer from '@/components/CountdownTimer';
 import styles from './page.module.css';
 
-export const revalidate = 30; // ISR caching for lightning fast loads
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const event = await prisma.event.findFirst({

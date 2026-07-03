@@ -5,7 +5,7 @@ import VotingForm from '@/components/VotingForm';
 import styles from './page.module.css';
 import { Metadata } from 'next';
 
-export const revalidate = 30; // ISR for lightning fast loading
+export const dynamic = 'force-dynamic';
 
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

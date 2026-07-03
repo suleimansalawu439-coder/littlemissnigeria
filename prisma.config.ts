@@ -9,6 +9,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DIRECT_URL"], // Used for schema pushes to avoid pooler hang
+    url: process.env["DIRECT_URL"] || process.env["DATABASE_URL"],
   },
 });
