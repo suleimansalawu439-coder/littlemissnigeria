@@ -121,7 +121,6 @@ export default async function HomePage() {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <ContestantCard
-                    id={contestant.id}
                     slug={contestant.slug}
                     name={contestant.name}
                     imageUrl={contestant.imageUrl}

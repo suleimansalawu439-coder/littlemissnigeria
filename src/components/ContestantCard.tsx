@@ -3,7 +3,6 @@ import Image from 'next/image';
 import styles from './ContestantCard.module.css';
 
 interface ContestantCardProps {
-  id: string;
   slug: string;
   name: string;
   imageUrl: string | null;
@@ -13,7 +12,6 @@ interface ContestantCardProps {
 }
 
 export default function ContestantCard({
-  id,
   name,
   slug,
   imageUrl,

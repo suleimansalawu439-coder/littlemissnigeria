@@ -7,9 +7,6 @@ import { Metadata } from 'next';
 
 export const revalidate = 30; // ISR for lightning fast loading
 
-interface ContestantPageProps {
-  params: Promise<{ slug: string }>;
-}
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const contestant = await prisma.contestant.findUnique({
@@ -26,7 +23,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ContestantPage({ params, searchParams }: { params: { slug: string }, searchParams: { voted?: string } }) {
+export default async function ContestantPage({ params }: { params: { slug: string } }) {
   const contestant = await prisma.contestant.findUnique({
     where: { slug: params.slug },
     include: {
