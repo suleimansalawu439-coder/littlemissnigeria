@@ -75,10 +75,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generate a simple slug
+    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const uniqueSlug = `${baseSlug}-${Math.random().toString(36).substring(2, 8)}`;
+
     // Create the contestant and auto-assign to the active event
     const contestant = await prisma.contestant.create({
       data: {
         name,
+        slug: uniqueSlug,
         bio: bio || '',
         imageUrl: imageUrl || '',
         eventId: activeEvent.id,

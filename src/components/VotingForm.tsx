@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import styles from './VotingForm.module.css';
 
 interface VotingFormProps {
@@ -8,177 +8,142 @@ interface VotingFormProps {
   contestantName: string;
 }
 
-const PACKAGES = [
-  { votes: 1, amount: 100, label: '1 Vote', price: '₦100' },
-  { votes: 5, amount: 500, label: '5 Votes', price: '₦500' },
+const VOTE_PACKAGES = [
+  { id: 'pack-1', votes: 1, amount: 100, label: 'Single' },
+  { id: 'pack-2', votes: 5, amount: 500, label: 'Bronze' },
+  { id: 'pack-3', votes: 10, amount: 1000, label: 'Silver', popular: true },
+  { id: 'pack-4', votes: 50, amount: 5000, label: 'Gold' },
 ];
 
-export default function VotingForm({
-  contestantId,
-  contestantName,
-}: VotingFormProps) {
-  const [selectedPackage, setSelectedPackage] = useState(0);
-  const [name, setName] = useState('');
+export default function VotingForm({ contestantId }: VotingFormProps) {
+  const [selectedPackage, setSelectedPackage] = useState(VOTE_PACKAGES[1]);
+  const [voterName, setVoterName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const currentPackage = PACKAGES[selectedPackage];
-
-  async function handleSubmit(e: FormEvent) {
+  const handleVote = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      setError('Please fill in all fields.');
-      return;
-    }
-
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const res = await fetch('/api/payments/initialize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          voterName,
+          email,
+          phoneNumber,
           contestantId,
-          votes: currentPackage.votes,
-          amount: currentPackage.amount,
-          voterName: name.trim(),
-          email: email.trim(),
-          phoneNumber: phone.trim(),
+          votes: selectedPackage.votes,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to initialize payment.');
+        const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Failed to initialize payment');
+        throw new Error(errorMsg);
       }
 
-      // Redirect to Paystack payment URL
-      if (data.authorizationUrl) {
-        window.location.href = data.authorizationUrl;
+      // Redirect to Paystack checkout
+      window.location.href = data.authorizationUrl;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        throw new Error('No payment URL received.');
+        setError('Something went wrong');
       }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
-      );
-    } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className={styles.wrapper}>
-      <h3 className={styles.title}>Cast Your Vote</h3>
-      <p className={styles.subtitle}>
-        Vote for <strong>{contestantName}</strong> — select a package below
+    <form className={styles.form} onSubmit={handleVote}>
+      {error && <div className={styles.errorAlert}>{error}</div>}
+
+      <div className={styles.packageSelection}>
+        <label className={styles.label}>Select Package</label>
+        <div className={styles.packageGrid}>
+          {VOTE_PACKAGES.map((pkg) => (
+            <div
+              key={pkg.id}
+              className={`${styles.packageCard} ${
+                selectedPackage.id === pkg.id ? styles.packageCardSelected : ''
+              }`}
+              onClick={() => setSelectedPackage(pkg)}
+            >
+              {pkg.popular && <span className={styles.popularBadge}>Most Popular</span>}
+              <div className={styles.pkgTitle}>{pkg.label}</div>
+              <div className={styles.pkgVotes}>
+                <span className={styles.pkgVoteNumber}>{pkg.votes}</span>
+                <span className={styles.pkgVoteText}>Votes</span>
+              </div>
+              <div className={styles.pkgPrice}>₦{pkg.amount.toLocaleString()}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="voter-name" className={styles.label}>Full Name</label>
+        <input
+          id="voter-name"
+          type="text"
+          className="form-input"
+          placeholder="Enter your name"
+          value={voterName}
+          onChange={(e) => setVoterName(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="voter-email" className={styles.label}>Email Address</label>
+        <input
+          id="voter-email"
+          type="email"
+          className="form-input"
+          placeholder="For payment receipt"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="voter-phone" className={styles.label}>Phone Number</label>
+        <input
+          id="voter-phone"
+          type="tel"
+          className="form-input"
+          placeholder="e.g. 08012345678"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        className={`btn btn-primary ${styles.submitBtn}`}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
+            Processing...
+          </>
+        ) : (
+          `Pay ₦${selectedPackage.amount.toLocaleString()} to Vote`
+        )}
+      </button>
+      
+      <p className={styles.secureText}>
+        🔒 Secure payment powered by Paystack
       </p>
-
-      {/* Package Selection */}
-      <div className={styles.packages}>
-        {PACKAGES.map((pkg, index) => (
-          <label
-            key={pkg.votes}
-            className={
-              selectedPackage === index
-                ? styles.packageCardSelected
-                : styles.packageCard
-            }
-          >
-            <input
-              type="radio"
-              name="package"
-              value={index}
-              checked={selectedPackage === index}
-              onChange={() => setSelectedPackage(index)}
-              className={styles.hiddenRadio}
-            />
-            <div className={styles.packageVotes}>{pkg.votes}</div>
-            <div className={styles.packageVotesLabel}>
-              {pkg.votes === 1 ? 'Vote' : 'Votes'}
-            </div>
-            <div className={styles.packagePrice}>
-              {pkg.price}
-            </div>
-          </label>
-        ))}
-      </div>
-
-      {/* Order Summary */}
-      <div className={styles.summary}>
-        <span className={styles.summaryLabel}>Total</span>
-        <span className={styles.summaryValue}>{currentPackage.price}</span>
-      </div>
-
-      {/* Form */}
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="voterName">
-            Full Name
-          </label>
-          <input
-            id="voterName"
-            type="text"
-            className={styles.input}
-            placeholder="Enter your full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="voterEmail">
-            Email Address
-          </label>
-          <input
-            id="voterEmail"
-            type="email"
-            className={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="voterPhone">
-            Phone Number
-          </label>
-          <input
-            id="voterPhone"
-            type="tel"
-            className={styles.input}
-            placeholder="e.g. 08012345678"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-        </div>
-
-        {error && <div className={styles.error}>{error}</div>}
-
-        <button
-          type="submit"
-          className={styles.submitBtn}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className={styles.loading}>
-              <span className={styles.loadingSpinner} />
-              Processing...
-            </span>
-          ) : (
-            <>💳 Pay & Vote — {currentPackage.price}</>
-          )}
-        </button>
-      </form>
-    </div>
+    </form>
   );
 }

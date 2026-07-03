@@ -46,18 +46,21 @@ async function main() {
       data: [
         {
           name: 'Jane Doe',
+          slug: 'jane-doe',
           bio: 'A passionate model from Lagos with a heart of gold.',
           imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
           eventId: event.id,
         },
         {
           name: 'Sarah Smith',
+          slug: 'sarah-smith',
           bio: 'Aspiring actress and philanthropist from Abuja.',
           imageUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400',
           eventId: event.id,
         },
         {
           name: 'Aisha Bello',
+          slug: 'aisha-bello',
           bio: 'Loves cooking, exploring nature, and making the world a better place.',
           imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400',
           eventId: event.id,

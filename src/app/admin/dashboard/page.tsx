@@ -1,160 +1,127 @@
 import { prisma } from '@/lib/prisma';
-import {
-  DollarSign,
-  Vote,
-  Users,
-  Receipt,
-} from 'lucide-react';
 import styles from './page.module.css';
 
-function formatCurrency(amount: number): string {
-  const amountInNaira = amount / 100;
-  return '₦' + amountInNaira.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
+export const dynamic = 'force-dynamic';
 
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-NG', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-}
+export default async function DashboardPage() {
+  const event = await prisma.event.findFirst({
+    where: { isActive: true },
+    include: {
+      contestants: {
+        orderBy: { totalVotes: 'desc' },
+        take: 5,
+      },
+    },
+  });
 
-export default async function AdminDashboardPage() {
-  const [
-    totalRevenueResult,
-    totalVotesResult,
-    totalContestants,
-    totalTransactions,
-    recentPayments,
-  ] = await Promise.all([
-    prisma.payment.aggregate({
-      _sum: { amount: true },
-      where: { status: 'SUCCESS' },
-    }),
-    prisma.contestant.aggregate({
-      _sum: { totalVotes: true },
-    }),
-    prisma.contestant.count(),
-    prisma.payment.count(),
-    prisma.payment.findMany({
-      take: 10,
-      orderBy: { createdAt: 'desc' },
-      include: { contestant: { select: { name: true } } },
-    }),
-  ]);
+  const allPayments = await prisma.payment.findMany({
+    where: { status: 'SUCCESS' },
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+    include: {
+      contestant: true,
+    },
+  });
 
-  const totalRevenue = totalRevenueResult._sum.amount || 0;
-  const totalVotes = totalVotesResult._sum.totalVotes || 0;
-
-  const stats = [
-    {
-      label: 'Total Revenue',
-      value: formatCurrency(totalRevenue),
-      icon: DollarSign,
-      colorClass: styles.statIconGold,
-    },
-    {
-      label: 'Total Votes',
-      value: totalVotes.toLocaleString(),
-      icon: Vote,
-      colorClass: styles.statIconBlue,
-    },
-    {
-      label: 'Contestants',
-      value: totalContestants.toLocaleString(),
-      icon: Users,
-      colorClass: styles.statIconGreen,
-    },
-    {
-      label: 'Transactions',
-      value: totalTransactions.toLocaleString(),
-      icon: Receipt,
-      colorClass: styles.statIconPurple,
-    },
-  ];
+  const totalVotes = event?.contestants.reduce((sum, c) => sum + c.totalVotes, 0) || 0;
+  
+  // Calculate total revenue from successful payments for the active event (simplified mock logic using all payments here for MVP) 
+  // In reality you'd want to sum over ALL successful payments, not just `take: 5`
+  const allSuccessfulPayments = await prisma.payment.findMany({
+    where: { status: 'SUCCESS' },
+  });
+  const actualTotalRevenue = allSuccessfulPayments.reduce((sum, p) => sum + p.amount, 0);
 
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Dashboard</h1>
-        <p className={styles.pageSubtitle}>
-          Welcome back — here&apos;s an overview of your platform.
-        </p>
+    <div className={styles.dashboard}>
+      <div className={styles.header}>
+        <h1 className="heading-sm">Dashboard Overview</h1>
+        {event && (
+          <div className={styles.eventBadge}>
+            <span className={styles.pulseDot}></span>
+            Active Event: {event.title}
+          </div>
+        )}
       </div>
 
-      {/* ─── Stat Cards ──────────────────────── */}
+      {/* Stats Cards */}
       <div className={styles.statsGrid}>
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div key={stat.label} className={styles.statCard}>
-              <div className={styles.statHeader}>
-                <span className={styles.statLabel}>{stat.label}</span>
-                <div className={`${styles.statIconBox} ${stat.colorClass}`}>
-                  <Icon size={20} />
-                </div>
-              </div>
-              <p className={styles.statValue}>{stat.value}</p>
-            </div>
-          );
-        })}
+        <div className={`${styles.statCard} glass-card`}>
+          <div className={styles.statIcon}>👑</div>
+          <div className={styles.statInfo}>
+            <div className={styles.statLabel}>Total Contestants</div>
+            <div className={styles.statValue}>{event?.contestants.length || 0}</div>
+          </div>
+        </div>
+        
+        <div className={`${styles.statCard} glass-card`}>
+          <div className={styles.statIcon}>🗳️</div>
+          <div className={styles.statInfo}>
+            <div className={styles.statLabel}>Total Votes Cast</div>
+            <div className={styles.statValue}>{totalVotes.toLocaleString()}</div>
+          </div>
+        </div>
+        
+        <div className={`${styles.statCard} glass-card`}>
+          <div className={styles.statIcon}>💰</div>
+          <div className={styles.statInfo}>
+            <div className={styles.statLabel}>Total Revenue (₦)</div>
+            <div className={styles.statValue}>{actualTotalRevenue.toLocaleString()}</div>
+          </div>
+        </div>
       </div>
 
-      {/* ─── Recent Payments ─────────────────── */}
-      <div className={styles.tableSection}>
-        <div className={styles.tableSectionHeader}>
-          <h2 className={styles.tableSectionTitle}>Recent Payments</h2>
+      <div className={styles.mainGrid}>
+        {/* Leaderboard */}
+        <div className={`${styles.panel} glass-card`}>
+          <div className={styles.panelHeader}>
+            <h3 className={styles.panelTitle}>Top 5 Contestants</h3>
+            <span className="text-gold text-sm">Live</span>
+          </div>
+          <div className={styles.panelBody}>
+            {event?.contestants.length ? (
+              <div className={styles.leaderboardList}>
+                {event.contestants.map((c, i) => (
+                  <div key={c.id} className={styles.leaderboardItem}>
+                    <div className={styles.rank}>#{i + 1}</div>
+                    <div className={styles.contestantInfo}>
+                      <div className={styles.cName}>{c.name}</div>
+                      <div className={styles.cVotes}>{c.totalVotes.toLocaleString()} votes</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">No contestants found.</p>
+            )}
+          </div>
         </div>
 
-        {recentPayments.length === 0 ? (
-          <div className={styles.emptyState}>No payments recorded yet.</div>
-        ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Reference</th>
-                <th>Voter</th>
-                <th>Contestant</th>
-                <th>Amount</th>
-                <th>Votes</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentPayments.map((payment) => (
-                <tr key={payment.id}>
-                  <td>
-                    <span className={styles.reference}>
-                      {payment.reference}
-                    </span>
-                  </td>
-                  <td>{payment.voterName}</td>
-                  <td>{payment.contestant.name}</td>
-                  <td>{formatCurrency(payment.amount)}</td>
-                  <td>{payment.votesAdded}</td>
-                  <td>
-                    <span
-                      className={`${styles.statusBadge} ${
-                        payment.status === 'SUCCESS'
-                          ? styles.statusSuccess
-                          : payment.status === 'PENDING'
-                          ? styles.statusPending
-                          : styles.statusFailed
-                      }`}
-                    >
-                      {payment.status}
-                    </span>
-                  </td>
-                  <td>{formatDate(payment.createdAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        {/* Recent Transactions */}
+        <div className={`${styles.panel} glass-card`}>
+          <div className={styles.panelHeader}>
+            <h3 className={styles.panelTitle}>Recent Payments</h3>
+            <a href="/admin/payments" className={styles.viewAll}>View All</a>
+          </div>
+          <div className={styles.panelBody}>
+            {allPayments.length ? (
+              <div className={styles.transactionList}>
+                {allPayments.map(p => (
+                  <div key={p.id} className={styles.transactionItem}>
+                    <div className={styles.txIcon}>✓</div>
+                    <div className={styles.txInfo}>
+                      <div className={styles.txEmail}>{p.email}</div>
+                      <div className={styles.txDesc}>Voted for {p.contestant.name}</div>
+                    </div>
+                    <div className={styles.txAmount}>₦{p.amount.toLocaleString()}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">No recent payments.</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

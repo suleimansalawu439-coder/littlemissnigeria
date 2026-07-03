@@ -2,53 +2,69 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, CreditCard, Settings } from 'lucide-react';
-import styles from './layout.module.css';
+import { signOut } from 'next-auth/react';
+import { useState } from 'react';
+import styles from './AdminSidebar.module.css';
 
-const navItems = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'Contestants', href: '/admin/contestants', icon: Users },
-  { label: 'Payments', href: '/admin/payments', icon: CreditCard },
-  { label: 'Event Settings', href: '/admin/settings', icon: Settings },
+const MENU_ITEMS = [
+  { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+  { path: '/admin/contestants', label: 'Contestants', icon: '👑' },
+  { path: '/admin/payments', label: 'Payments', icon: '💳' },
+  { path: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.sidebarHeader}>
-        <div className={styles.brandRow}>
-          <span className={styles.brandIcon}>👑</span>
-          <div className={styles.brandText}>
-            <h2>Little Miss Nigeria</h2>
-            <span>Admin Panel</span>
-          </div>
-        </div>
-      </div>
+    <>
+      {/* Mobile Toggle Button */}
+      <button 
+        className={styles.mobileToggleBtn}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Admin Menu"
+      >
+        {isOpen ? '✕' : '☰'}
+      </button>
 
-      <nav className={styles.navSection}>
-        <p className={styles.navLabel}>Navigation</p>
-        <ul className={styles.navList}>
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname.startsWith(item.href);
+      {/* Mobile Overlay */}
+      <div 
+        className={`${styles.overlay} ${isOpen ? styles.overlayOpen : ''}`} 
+        onClick={() => setIsOpen(false)}
+      />
+
+      <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
+        <div className={styles.brand}>
+          <span className={styles.brandIcon}>♛</span> LMN Admin
+        </div>
+
+        <nav className={styles.nav}>
+          {MENU_ITEMS.map((item) => {
+            const isActive = pathname === item.path;
             return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`${styles.navLink} ${
-                    isActive ? styles.navLinkActive : ''
-                  }`}
-                >
-                  <Icon className={styles.navIcon} size={20} />
-                  {item.label}
-                </Link>
-              </li>
+              <Link 
+                key={item.path} 
+                href={item.path}
+                className={`${styles.link} ${isActive ? styles.activeLink : ''}`}
+                onClick={() => setIsOpen(false)} // Auto-close on mobile click
+              >
+                <span>{item.icon}</span>
+                {item.label}
+              </Link>
             );
           })}
-        </ul>
-      </nav>
-    </aside>
+        </nav>
+
+        <div className={styles.footer}>
+          <button 
+            className={styles.logoutBtn}
+            onClick={() => signOut({ callbackUrl: '/admin/login' })}
+          >
+            <span>🚪</span> Sign Out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

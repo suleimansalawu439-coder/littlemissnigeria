@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-const VOTE_PRICING: Record<number, number> = {
-  1: 10000,  // ₦100 in kobo
-  5: 50000,  // ₦500 in kobo
-};
+const VOTE_PRICE_KOBO = 10000; // ₦100 per vote in kobo
 
 function generateReference(): string {
   const timestamp = Date.now().toString(36);
@@ -26,14 +23,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate vote count
-    if (votes !== 1 && votes !== 5) {
+    if (!votes || isNaN(votes) || votes < 1) {
       return NextResponse.json(
-        { error: 'Invalid vote count. Must be 1 or 5.' },
+        { error: 'Invalid vote count. Must be at least 1.' },
         { status: 400 }
       );
     }
 
-    const amount = VOTE_PRICING[votes];
+    const amount = votes * VOTE_PRICE_KOBO;
 
     // Get voter IP address
     const ipAddress =

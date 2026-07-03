@@ -22,6 +22,7 @@ model Event {
 model Contestant {
   id          String   @id @default(uuid())
   name        String
+  slug        String   @unique
   bio         String?
   imageUrl    String?
   totalVotes  Int      @default(0)

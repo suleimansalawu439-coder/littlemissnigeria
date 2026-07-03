@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     // Find the payment record by reference
     const payment = await prisma.payment.findUnique({
       where: { reference },
+      include: { contestant: true },
     });
 
     if (!payment) {
@@ -33,6 +34,7 @@ export async function GET(request: NextRequest) {
     }
 
     const contestantId = payment.contestantId;
+    const contestantSlug = payment.contestant.slug;
 
     if (paystackData.data?.status === 'success') {
       // Only process if still PENDING (avoid double-processing from webhook)
@@ -55,7 +57,7 @@ export async function GET(request: NextRequest) {
       }
 
       return NextResponse.redirect(
-        new URL(`/contestants/${contestantId}?voted=true`, request.url)
+        new URL(`/contestants/${contestantSlug}?voted=true`, request.url)
       );
     } else {
       await prisma.payment.update({
@@ -64,7 +66,7 @@ export async function GET(request: NextRequest) {
       });
 
       return NextResponse.redirect(
-        new URL(`/contestants/${contestantId}?voted=false`, request.url)
+        new URL(`/contestants/${contestantSlug}?voted=false`, request.url)
       );
     }
   } catch (error) {
