@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +19,6 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const mimeType = file.type || 'image/jpeg';
     const base64Data = buffer.toString('base64');
     const fileUrl = `data:${mimeType};base64,${base64Data}`;
