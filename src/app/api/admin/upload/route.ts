@@ -23,13 +23,9 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    const filePath = path.join(uploadDir, filename);
-
-    await fs.mkdir(uploadDir, { recursive: true });
-    await fs.writeFile(filePath, buffer);
-
-    const fileUrl = `/uploads/${filename}`;
+    const mimeType = file.type || 'image/jpeg';
+    const base64Data = buffer.toString('base64');
+    const fileUrl = `data:${mimeType};base64,${base64Data}`;
 
     return NextResponse.json({ success: true, url: fileUrl }, { status: 201 });
   } catch (error) {

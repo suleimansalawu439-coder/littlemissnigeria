@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   const allSuccessfulPayments = await prisma.payment.findMany({
     where: { status: 'SUCCESS' },
   });
-  const actualTotalRevenue = allSuccessfulPayments.reduce((sum, p) => sum + p.amount, 0);
+  const actualTotalRevenue = allSuccessfulPayments.reduce((sum, p) => sum + p.amount, 0) / 100;
 
   return (
     <div className={styles.dashboard}>

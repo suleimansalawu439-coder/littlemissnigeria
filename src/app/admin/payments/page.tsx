@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 function formatCurrency(amount: number): string {
   const amountInNaira = amount / 100;
   return '₦' + amountInNaira.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });

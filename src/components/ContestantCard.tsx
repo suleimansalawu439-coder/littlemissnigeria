@@ -47,11 +47,6 @@ export default function ContestantCard({
               <span className={styles.placeholderIcon}>👑</span>
             </div>
           )}
-          
-          {/* Hover Overlay */}
-          <div className={styles.hoverOverlay}>
-            <span className="btn btn-primary btn-sm">Vote Now</span>
-          </div>
         </div>
 
         <div className={styles.infoArea}>
@@ -63,11 +58,16 @@ export default function ContestantCard({
               <span className={styles.voteCount}>{totalVotes.toLocaleString()}</span>
             </div>
             
+            
             <div className={styles.progressBarBg}>
               <div 
                 className={styles.progressBarFill} 
                 style={{ width: `${progressPercent}%` }} 
               />
+            </div>
+            
+            <div style={{ marginTop: '12px' }}>
+              <span className="btn btn-primary btn-sm" style={{ width: '100%' }}>Vote Now</span>
             </div>
           </div>
         </div>
