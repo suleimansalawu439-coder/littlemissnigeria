@@ -8,7 +8,7 @@ import styles from './page.module.css';
 
 export default function AdminLogin() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function AdminLogin() {
 
     const res = await signIn('credentials', {
       redirect: false,
-      username,
+      email,
       password,
     });
 
@@ -59,14 +59,14 @@ export default function AdminLogin() {
             {error && <div className={styles.errorAlert}>{error}</div>}
 
             <div className="form-group">
-              <label htmlFor="username" className="form-label">Username</label>
+              <label htmlFor="email" className="form-label">Email</label>
               <input
-                id="username"
-                type="text"
+                id="email"
+                type="email"
                 className="form-input"
-                placeholder="Enter admin username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter admin email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
