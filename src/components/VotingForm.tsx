@@ -13,6 +13,8 @@ const VOTE_PACKAGES = [
   { id: 'pack-2', votes: 5, amount: 500, label: 'Bronze' },
   { id: 'pack-3', votes: 10, amount: 1000, label: 'Silver', popular: true },
   { id: 'pack-4', votes: 50, amount: 5000, label: 'Gold' },
+  { id: 'pack-5', votes: 100, amount: 10000, label: 'Platinum' },
+  { id: 'pack-6', votes: 200, amount: 20000, label: 'Diamond' },
 ];
 
 export default function VotingForm({ contestantId }: VotingFormProps) {
