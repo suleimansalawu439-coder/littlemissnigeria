@@ -23,8 +23,10 @@ export default async function DashboardPage() {
     },
   });
 
-  const totalVotes = event?.contestants.reduce((sum, c) => sum + c.totalVotes, 0) || 0;
-  
+  const allContestants = await prisma.contestant.findMany({
+    where: { eventId: event?.id }
+  });
+  const totalVotes = allContestants.reduce((sum, c) => sum + c.totalVotes, 0);
   // Calculate total revenue from successful payments for the active event (simplified mock logic using all payments here for MVP) 
   // In reality you'd want to sum over ALL successful payments, not just `take: 5`
   const allSuccessfulPayments = await prisma.payment.findMany({
