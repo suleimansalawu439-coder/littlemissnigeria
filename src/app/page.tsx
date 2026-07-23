@@ -80,7 +80,7 @@ export default async function HomePage() {
       {/* How it Works Section */}
       <section className={styles.howItWorks}>
         <div className="container">
-          <h2 className="heading-lg text-center" style={{marginBottom: 'var(--space-3xl)'}}>How To Vote</h2>
+          <h2 className="heading-lg" style={{marginBottom: 'var(--space-3xl)', textAlign: 'center', width: '100%'}}>How To Vote</h2>
           <div className={styles.stepsGrid}>
             <div className={styles.stepCard}>
               <div className={styles.stepNumber}>1</div>
