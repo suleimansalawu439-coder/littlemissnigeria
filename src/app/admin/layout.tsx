@@ -1,11 +1,19 @@
 import AdminSidebar from './AdminSidebar';
 import styles from './layout.module.css';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return <>{children}</>;
+  }
+
   return (
     <div className={styles.adminLayout}>
       <AdminSidebar />
