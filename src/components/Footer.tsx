@@ -20,8 +20,7 @@ export default function Footer() {
           prestigious beauty pageant. Celebrating elegance, intelligence, and grace.
         </p>
         <div className="footer-links">
-          <a href="/" className="footer-link">Home</a>
-          <a href="/#contestants" className="footer-link">Meet Contestants</a>
+          {/* Links hidden during maintenance */}
         </div>
         <div className="footer-bottom">
           © {new Date().getFullYear()} Little Miss Nigeria. All rights reserved.
