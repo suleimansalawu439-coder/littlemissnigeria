@@ -51,8 +51,14 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Nav hidden during maintenance */}
+          {/* Desktop Nav */}
           <div className={styles.desktopNav}>
+            <Link href="/" className={`${styles.navLink} ${pathname === '/' ? styles.active : ''}`}>
+              Home
+            </Link>
+            <Link href="/#contestants" className={styles.navLink}>
+              Contestants
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -76,7 +82,10 @@ export default function Navbar() {
             <button className={styles.closeBtn} onClick={() => setIsMobileMenuOpen(false)}>✕</button>
           </div>
           <div className={styles.mobileNav}>
-            {/* Links hidden during maintenance */}
+            <div className={styles.mobileNav}>
+              <Link href="/" className={styles.mobileNavLink}>Home</Link>
+              <Link href="/#contestants" className={styles.mobileNavLink}>Contestants</Link>
+            </div>
           </div>
         </div>
       </div>
