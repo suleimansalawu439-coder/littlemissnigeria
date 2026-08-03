@@ -140,3 +140,167 @@
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.4);
 }
+
+/* ─── Filter Bar ────────────────────────────────── */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-end;
+  background: rgba(18, 18, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filterLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chipActive {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.45);
+  color: #F5D061;
+}
+
+.chipSuccess.chipActive {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.chipPending.chipActive {
+  background: rgba(245, 208, 97, 0.12);
+  border-color: rgba(245, 208, 97, 0.4);
+  color: #F5D061;
+}
+
+.chipFailed.chipActive {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* ─── Date Range ────────────────────────────────── */
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dateInput {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.65rem;
+  outline: none;
+  cursor: pointer;
+  color-scheme: dark;
+  transition: border-color 0.18s;
+}
+
+.dateInput:focus {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.dateSep {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.9rem;
+}
+
+/* ─── Sort Select ───────────────────────────────── */
+.sortSelect {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+
+.sortSelect:focus {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* ─── Summary Strip ─────────────────────────────── */
+.summaryStrip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.summaryItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  gap: 0.2rem;
+}
+
+.summaryVal {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #F5D061;
+}
+
+.summaryLbl {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.summaryDivider {
+  width: 1px;
+  height: 2.5rem;
+  background: rgba(212, 175, 55, 0.15);
+  flex-shrink: 0;
+}
+
