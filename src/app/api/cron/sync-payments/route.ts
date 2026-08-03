@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     let synced = 0;
     let failed = 0;
     let skipped = 0;
+    const details: { reference: string; paystackStatus: string | null; action: string }[] = [];
 
     // Process each pending payment
     for (const payment of pendingPayments) {
@@ -52,11 +53,12 @@ export async function GET(request: NextRequest) {
 
         if (!paystackRes.ok) {
           skipped++;
+          details.push({ reference: payment.reference, paystackStatus: `HTTP_ERROR_${paystackRes.status}`, action: 'skipped' });
           continue;
         }
 
         const paystackData = await paystackRes.json();
-        const paystackStatus = paystackData?.data?.status;
+        const paystackStatus = paystackData?.data?.status ?? 'unknown';
 
         if (paystackStatus === 'success') {
           // Atomically mark SUCCESS and increment votes
@@ -76,6 +78,7 @@ export async function GET(request: NextRequest) {
             });
           });
           synced++;
+          details.push({ reference: payment.reference, paystackStatus, action: 'synced_success' });
         } else if (
           paystackStatus === 'failed' ||
           paystackStatus === 'abandoned'
@@ -85,14 +88,17 @@ export async function GET(request: NextRequest) {
             data: { status: 'FAILED' },
           });
           failed++;
+          details.push({ reference: payment.reference, paystackStatus, action: 'marked_failed' });
         } else {
           // Still pending on Paystack side — leave as is
           skipped++;
+          details.push({ reference: payment.reference, paystackStatus, action: 'skipped_still_pending' });
         }
       } catch (innerError) {
         // Don't let one bad payment crash the whole batch
         console.error(`Error syncing payment ${payment.reference}:`, innerError);
         skipped++;
+        details.push({ reference: payment.reference, paystackStatus: 'exception', action: 'skipped_error' });
       }
     }
 
@@ -102,6 +108,7 @@ export async function GET(request: NextRequest) {
       failed,
       skipped,
       total: pendingPayments.length,
+      details,
     });
   } catch (error) {
     console.error('Cron sync error:', error);
