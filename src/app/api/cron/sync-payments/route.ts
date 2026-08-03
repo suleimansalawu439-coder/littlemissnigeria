@@ -52,8 +52,20 @@ export async function GET(request: NextRequest) {
         );
 
         if (!paystackRes.ok) {
-          skipped++;
-          details.push({ reference: payment.reference, paystackStatus: `HTTP_ERROR_${paystackRes.status}`, action: 'skipped' });
+          if (paystackRes.status === 400) {
+            // 400 = reference not found on Paystack — transaction was never initiated
+            // Mark as FAILED so it stops showing as pending
+            await prisma.payment.update({
+              where: { reference: payment.reference },
+              data: { status: 'FAILED' },
+            });
+            failed++;
+            details.push({ reference: payment.reference, paystackStatus: 'NOT_FOUND_ON_PAYSTACK', action: 'marked_failed' });
+          } else {
+            // Other HTTP errors (401, 500, etc.) — skip and retry next time
+            skipped++;
+            details.push({ reference: payment.reference, paystackStatus: `HTTP_ERROR_${paystackRes.status}`, action: 'skipped' });
+          }
           continue;
         }
 
