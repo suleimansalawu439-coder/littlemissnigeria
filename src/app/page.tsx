@@ -36,7 +36,7 @@ export default async function HomePage() {
     <>
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.particlesContainer>
+        <div className={styles.particlesContainer}>
           <div className={styles.particle} style={{top: '10%', left: '15%', animationDelay: '0s'}}></div>
           <div className={styles.particle} style={{top: '30%', right: '10%', animationDelay: '1s'}}></div>
           <div className={styles.particle} style={{bottom: '20%', left: '20%', animationDelay: '2s'}}></div>
