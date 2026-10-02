@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isVotingOpen } from '@/lib/event';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     const pendingPayments = await prisma.payment.findMany({
       where: { status: 'PENDING' },
-      include: { contestant: true },
+      include: { contestant: { include: { event: true } } },
     });
 
     if (pendingPayments.length === 0) {
@@ -66,17 +67,26 @@ export async function GET(request: NextRequest) {
         const paystackStatus = paystackData?.data?.status ?? 'unknown';
 
         if (paystackStatus === 'success') {
-          // Atomically mark SUCCESS and increment votes (runs once per payment only)
-          await prisma.$transaction(async (tx) => {
-            await tx.payment.update({
+          if (isVotingOpen(payment.contestant.event)) {
+            // Atomically mark SUCCESS and increment votes (runs once per payment only)
+            await prisma.$transaction(async (tx) => {
+              await tx.payment.update({
+                where: { reference: payment.reference },
+                data: { status: 'SUCCESS' },
+              });
+              await tx.contestant.update({
+                where: { id: payment.contestantId },
+                data: { totalVotes: { increment: payment.votesAdded } },
+              });
+            });
+          } else {
+            // Voting ended before this payment completed: record the payment
+            // truthfully but credit NO votes.
+            await prisma.payment.update({
               where: { reference: payment.reference },
               data: { status: 'SUCCESS' },
             });
-            await tx.contestant.update({
-              where: { id: payment.contestantId },
-              data: { totalVotes: { increment: payment.votesAdded } },
-            });
-          });
+          }
           synced++;
         } else if (paystackStatus === 'failed' || paystackStatus === 'abandoned') {
           await prisma.payment.update({

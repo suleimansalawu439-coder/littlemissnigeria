@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isVotingOpen } from '@/lib/event';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
     // Find the payment record by reference
     const payment = await prisma.payment.findUnique({
       where: { reference },
-      include: { contestant: true },
+      include: { contestant: { include: { event: true } } },
     });
 
     if (!payment) {
@@ -39,21 +40,38 @@ export async function GET(request: NextRequest) {
     if (paystackData.data?.status === 'success') {
       // Only process if still PENDING (avoid double-processing from webhook)
       if (payment.status === 'PENDING') {
-        await prisma.$transaction(async (tx) => {
-          await tx.payment.update({
-            where: { reference },
-            data: { status: 'SUCCESS' },
+        if (isVotingOpen(payment.contestant.event)) {
+          await prisma.$transaction(async (tx) => {
+            await tx.payment.update({
+              where: { reference },
+              data: { status: 'SUCCESS' },
+            });
+
+            await tx.contestant.update({
+              where: { id: contestantId },
+              data: {
+                totalVotes: {
+                  increment: payment.votesAdded,
+                },
+              },
+            });
           });
 
-          await tx.contestant.update({
-            where: { id: contestantId },
-            data: {
-              totalVotes: {
-                increment: payment.votesAdded,
-              },
-            },
-          });
+          return NextResponse.redirect(
+            new URL(`/contestants/${contestantSlug}?voted=true`, request.url)
+          );
+        }
+
+        // The payment went through but voting had already ended: record the
+        // payment truthfully (money was collected) but credit NO votes.
+        await prisma.payment.update({
+          where: { reference },
+          data: { status: 'SUCCESS' },
         });
+
+        return NextResponse.redirect(
+          new URL('/?error=voting_ended', request.url)
+        );
       }
 
       return NextResponse.redirect(

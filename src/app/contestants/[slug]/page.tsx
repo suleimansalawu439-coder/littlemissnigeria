@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 import VotingForm from '@/components/VotingForm';
+import { isVotingOpen } from '@/lib/event';
 import styles from './page.module.css';
 import { Metadata } from 'next';
 
@@ -46,6 +48,14 @@ export default async function ContestantPage({ params }: { params: { slug: strin
         </div>
       </div>
     );
+  }
+
+  const votingOpen = isVotingOpen(contestant.event);
+
+  // Contestant profiles are disabled once voting closes — only the landing
+  // page and the admin backend stay accessible after the deadline.
+  if (!votingOpen) {
+    redirect('/');
   }
 
   return (
@@ -96,7 +106,7 @@ export default async function ContestantPage({ params }: { params: { slug: strin
               </div>
               <div className={`${styles.statCard} glass-card`}>
                 <div className={styles.statValue}>
-                  {contestant.event.isActive ? 'Live' : 'Ended'}
+                  {votingOpen ? 'Live' : 'Ended'}
                 </div>
                 <div className={styles.statLabel}>Status</div>
               </div>
@@ -112,7 +122,7 @@ export default async function ContestantPage({ params }: { params: { slug: strin
             <div className={styles.divider} />
 
             {/* Voting Form */}
-            {contestant.event.isActive ? (
+            {votingOpen ? (
               <div className={styles.votingSection}>
                 <h3 className={styles.votingTitle}>Cast Your Vote</h3>
                 <p className={styles.votingDesc}>

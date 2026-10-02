@@ -9,6 +9,8 @@ interface ContestantCardProps {
   totalVotes: number;
   bio: string | null;
   rank?: number;
+  /** When false the card is not a link and shows "Voting Ended" instead of "Vote Now". */
+  votingOpen?: boolean;
 }
 
 export default function ContestantCard({
@@ -17,13 +19,13 @@ export default function ContestantCard({
   imageUrl,
   totalVotes,
   rank,
+  votingOpen = true,
 }: ContestantCardProps) {
   // Max votes mock for progress bar (could be dynamic based on event total)
   const maxVotes = 50000;
   const progressPercent = Math.min(100, Math.max(2, (totalVotes / maxVotes) * 100));
 
-  return (
-    <Link href={`/contestants/${slug}`} className={styles.cardWrapper}>
+  const cardBody = (
       <div className={`${styles.card} glass-card`}>
         {/* Rank Badge */}
         {rank && rank <= 3 && (
@@ -67,11 +69,26 @@ export default function ContestantCard({
             </div>
             
             <div style={{ marginTop: '12px' }}>
-              <span className="btn btn-primary btn-sm" style={{ width: '100%' }}>Vote Now</span>
+              {votingOpen ? (
+                <span className="btn btn-primary btn-sm" style={{ width: '100%' }}>Vote Now</span>
+              ) : (
+                <span className="btn btn-secondary btn-sm" style={{ width: '100%' }}>Voting Ended</span>
+              )}
             </div>
           </div>
         </div>
       </div>
+  );
+
+  // Once voting closes the profile links are disabled entirely: the card is
+  // no longer a link, so visitors stay on the landing page.
+  if (!votingOpen) {
+    return <div className={styles.cardWrapper}>{cardBody}</div>;
+  }
+
+  return (
+    <Link href={`/contestants/${slug}`} className={styles.cardWrapper}>
+      {cardBody}
     </Link>
   );
 }

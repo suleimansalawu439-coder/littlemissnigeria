@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
+import { isVotingOpen } from '@/lib/event';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,24 +38,34 @@ export async function POST(request: NextRequest) {
       // Find the payment by reference
       const payment = await prisma.payment.findUnique({
         where: { reference },
+        include: { contestant: { include: { event: true } } },
       });
 
       if (payment && payment.status === 'PENDING') {
-        await prisma.$transaction(async (tx) => {
-          await tx.payment.update({
+        if (isVotingOpen(payment.contestant.event)) {
+          await prisma.$transaction(async (tx) => {
+            await tx.payment.update({
+              where: { reference },
+              data: { status: 'SUCCESS' },
+            });
+
+            await tx.contestant.update({
+              where: { id: payment.contestantId },
+              data: {
+                totalVotes: {
+                  increment: payment.votesAdded,
+                },
+              },
+            });
+          });
+        } else {
+          // Voting ended before this payment completed: record the payment
+          // truthfully but credit NO votes.
+          await prisma.payment.update({
             where: { reference },
             data: { status: 'SUCCESS' },
           });
-
-          await tx.contestant.update({
-            where: { id: payment.contestantId },
-            data: {
-              totalVotes: {
-                increment: payment.votesAdded,
-              },
-            },
-          });
-        });
+        }
       }
     }
 

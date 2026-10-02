@@ -1,11 +1,16 @@
 import { prisma } from '@/lib/prisma';
 import ContestantCard from '@/components/ContestantCard';
 import CountdownTimer from '@/components/CountdownTimer';
+import { isVotingOpen } from '@/lib/event';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: { error?: string };
+}) {
   const event = await prisma.event.findFirst({
     where: { isActive: true },
     include: {
@@ -32,6 +37,9 @@ export default async function HomePage() {
 
   const totalVotesCast = event.contestants.reduce((acc, c) => acc + c.totalVotes, 0);
 
+  const votingOpen = isVotingOpen(event);
+  const showVotingEndedError = searchParams?.error === 'voting_ended';
+
   return (
     <>
       {/* Hero Section */}
@@ -46,8 +54,26 @@ export default async function HomePage() {
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>
             <span className={styles.heroBadgeDot} />
-            Voting is Live
+            {votingOpen ? 'Voting is Live' : 'Voting Ended'}
           </div>
+          {showVotingEndedError && (
+            <div
+              style={{
+                marginTop: '1rem',
+                padding: '0.9rem 1.2rem',
+                borderRadius: '12px',
+                background: 'rgba(180, 40, 40, 0.15)',
+                border: '1px solid rgba(220, 80, 80, 0.5)',
+                color: '#ffd7d7',
+                fontSize: '0.95rem',
+                maxWidth: '560px',
+              }}
+            >
+              Voting had ended before your payment completed. Your payment was
+              received but no votes were counted — please contact support about
+              a refund.
+            </div>
+          )}
           <h1 className={styles.heroTitle}>
             <span className={styles.heroTitleAccent}>{event.title}</span>
           </h1>
@@ -72,8 +98,20 @@ export default async function HomePage() {
       {/* Countdown Section */}
       <section className={styles.countdownSection}>
         <div className="container flex-col flex-center">
-          <h3 className={styles.countdownHeading}>Voting Ends In</h3>
-          <CountdownTimer endDate={event.endDate.toISOString()} />
+          {votingOpen ? (
+            <>
+              <h3 className={styles.countdownHeading}>Voting Ends In</h3>
+              <CountdownTimer endDate={event.endDate.toISOString()} />
+            </>
+          ) : (
+            <>
+              <h3 className={styles.countdownHeading}>Voting Has Ended</h3>
+              <p className="text-muted" style={{ textAlign: 'center', maxWidth: '520px' }}>
+                Thank you to everyone who voted and supported the contestants.
+                The results will be announced soon.
+              </p>
+            </>
+          )}
         </div>
       </section>
 
@@ -127,6 +165,7 @@ export default async function HomePage() {
                     totalVotes={contestant.totalVotes}
                     bio={contestant.bio}
                     rank={index + 1}
+                    votingOpen={votingOpen}
                   />
                 </div>
               ))}

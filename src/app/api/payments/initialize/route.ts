@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isVotingOpen } from '@/lib/event';
 
 const VOTE_PRICE_KOBO = 10000; // ₦100 per vote in kobo
 
@@ -41,12 +42,23 @@ export async function POST(request: NextRequest) {
     // Verify contestant exists
     const contestant = await prisma.contestant.findUnique({
       where: { id: contestantId },
+      include: { event: true },
     });
 
     if (!contestant) {
       return NextResponse.json(
         { error: 'Contestant not found' },
         { status: 404 }
+      );
+    }
+
+    // Reject new vote purchases once voting has closed (deadline passed
+    // or event deactivated). This is the server-side enforcement of the
+    // countdown timer — the client form alone cannot be trusted.
+    if (!isVotingOpen(contestant.event)) {
+      return NextResponse.json(
+        { error: 'Voting has ended for this event.' },
+        { status: 403 }
       );
     }
 
