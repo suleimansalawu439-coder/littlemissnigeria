@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { isVotingOpen } from '@/lib/event';
+import { wasVotingOpenAt } from '@/lib/event';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     if (paystackData.data?.status === 'success') {
       // Only process if still PENDING (avoid double-processing from webhook)
       if (payment.status === 'PENDING') {
-        if (isVotingOpen(payment.contestant.event)) {
+        if (wasVotingOpenAt(payment.createdAt, payment.contestant.event)) {
           await prisma.$transaction(async (tx) => {
             await tx.payment.update({
               where: { reference },
@@ -62,8 +62,9 @@ export async function GET(request: NextRequest) {
           );
         }
 
-        // The payment went through but voting had already ended: record the
-        // payment truthfully (money was collected) but credit NO votes.
+        // Safety net: initialize blocks post-deadline starts, so this should be
+        // unreachable. If it ever happens, record the payment truthfully
+        // (money was collected) but credit NO votes.
         await prisma.payment.update({
           where: { reference },
           data: { status: 'SUCCESS' },

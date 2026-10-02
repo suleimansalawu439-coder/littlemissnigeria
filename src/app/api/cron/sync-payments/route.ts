@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { isVotingOpen } from '@/lib/event';
+import { wasVotingOpenAt } from '@/lib/event';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         const paystackStatus = paystackData?.data?.status ?? 'unknown';
 
         if (paystackStatus === 'success') {
-          if (isVotingOpen(payment.contestant.event)) {
+          if (wasVotingOpenAt(payment.createdAt, payment.contestant.event)) {
             // Atomically mark SUCCESS and increment votes (runs once per payment only)
             await prisma.$transaction(async (tx) => {
               await tx.payment.update({
@@ -80,8 +80,7 @@ export async function GET(request: NextRequest) {
               });
             });
           } else {
-            // Voting ended before this payment completed: record the payment
-            // truthfully but credit NO votes.
+            // Safety net (see verify route): record truthfully, credit NO votes.
             await prisma.payment.update({
               where: { reference: payment.reference },
               data: { status: 'SUCCESS' },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { isVotingOpen } from '@/lib/event';
+import { wasVotingOpenAt } from '@/lib/event';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (payment && payment.status === 'PENDING') {
-        if (isVotingOpen(payment.contestant.event)) {
+        if (wasVotingOpenAt(payment.createdAt, payment.contestant.event)) {
           await prisma.$transaction(async (tx) => {
             await tx.payment.update({
               where: { reference },
@@ -59,8 +59,7 @@ export async function POST(request: NextRequest) {
             });
           });
         } else {
-          // Voting ended before this payment completed: record the payment
-          // truthfully but credit NO votes.
+          // Safety net (see verify route): record truthfully, credit NO votes.
           await prisma.payment.update({
             where: { reference },
             data: { status: 'SUCCESS' },
