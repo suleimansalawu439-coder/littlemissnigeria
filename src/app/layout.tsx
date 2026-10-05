@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,16 +15,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Little Miss Nigeria | Online Voting Platform",
-  description:
-    "Vote for your favorite contestants in the Little Miss Nigeria beauty pageant. A premium online voting platform.",
-  keywords: ["Little Miss Nigeria", "beauty pageant", "voting", "Nigeria"],
-  openGraph: {
-    title: "Little Miss Nigeria | Online Voting Platform",
-    description:
-      "Vote for your favorite contestants in the Little Miss Nigeria beauty pageant.",
-    type: "website",
-  },
+  title: "Subscription Expired",
+  description: "This site is no longer available.",
 };
 
 export default function RootLayout({
@@ -37,13 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className={inter.className}>
-        <Navbar />
-
-        {/* Main Content */}
+        {/* Site is shut down: no navbar, no footer — the only page is the
+            subscription-expired notice, and every route redirects to it. */}
         <main>{children}</main>
-
-        {/* Footer */}
-        <Footer />
       </body>
     </html>
   );

@@ -1,26 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  const isLoginPage = request.nextUrl.pathname === '/admin/login';
-
-  if (isLoginPage && token) {
-    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+// Full site shutdown: every route except the homepage itself redirects to
+// the homepage, which now only shows the "Subscription Expired" notice.
+// (Temporary 307 so browsers don't cache it permanently.)
+// NOTE: this mirrors /middleware.ts — whichever file Next.js executes,
+// the behavior is identical.
+export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.next();
   }
-
-  // Clone request headers and add the pathname
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-next-pathname', request.nextUrl.pathname);
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  return NextResponse.redirect(new URL('/', request.url), 307);
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };
